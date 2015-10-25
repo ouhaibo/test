@@ -1,13 +1,10 @@
 package com.ohb.test.com.ohb.test.pulltorefresh;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
-
-import java.util.logging.Handler;
 
 /**
  * Created by ouhaibo on 2015/10/6.
