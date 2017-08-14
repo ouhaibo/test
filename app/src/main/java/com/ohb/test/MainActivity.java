@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.hardware.input.InputManager;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.Parcel;
@@ -19,6 +20,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewRootImpl;
+
+import com.ohb.test.com.ohb.test.pulltorefresh.ActivityThreadHandlerCallback;
 
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
@@ -56,6 +59,26 @@ public class MainActivity extends Activity {
         });
 
         findViewById(android.R.id.content).getViewTreeObserver().addOnGlobalLayoutListener(null);
+
+    }
+
+    private void hookActivityLaunch() {
+        try {
+            Class classActivityThread = Class.forName("android.app.ActivityThread");
+            Field sCurrentActivityThreadField = classActivityThread.getDeclaredField("sCurrentActivityThread");
+            sCurrentActivityThreadField.setAccessible(true);
+            Object currentActivityThread = sCurrentActivityThreadField.get(null);
+
+            Field mHField = classActivityThread.getDeclaredField("mH");
+            mHField.setAccessible(true);
+            Handler mH = (Handler) mHField.get(currentActivityThread);
+
+            Field mCallbackField = Handler.class.getDeclaredField("mCallback");
+            mCallbackField.setAccessible(true);
+            mCallbackField.set(mH, new ActivityThreadHandlerCallback());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void hook_AMS() {

@@ -18,7 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <!-- 替身Activity, 用来欺骗AMS  -->
+        <activity android:name=".StubActivity"/>
         <service
             android:name=".com.ohb.test.pulltorefresh.BackService"
             android:enabled="true"
