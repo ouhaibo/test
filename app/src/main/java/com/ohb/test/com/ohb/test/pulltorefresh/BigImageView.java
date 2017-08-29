@@ -44,12 +44,12 @@ public class BigImageView extends ImageView {
             mRegionDecoder = BitmapRegionDecoder.newInstance(in, true);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            Rect r = new Rect();
-            BitmapFactory.decodeStream(in, r, options);
-            mPictureWidth = r.width();
-            mPictureHeight = r.height();
+            BitmapFactory.decodeStream(in, null, options);
+            mPictureWidth = options.outWidth;
+            mPictureHeight = options.outHeight;
             mOptions = new BitmapFactory.Options();
             mOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            mOptions.inMutable = true;
             mPaint = new Paint();
             mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
             prePoint = new PointF();
@@ -75,6 +75,7 @@ public class BigImageView extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Bitmap bm = mRegionDecoder.decodeRegion(mRect, mOptions);
+        mOptions.inBitmap = bm;
         canvas.drawBitmap(bm, 0, 0, mPaint);
     }
 
@@ -82,12 +83,31 @@ public class BigImageView extends ImageView {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                updatePoint(event,curPoint);
+                updatePoint(event, curPoint);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 break;
             case MotionEvent.ACTION_MOVE:
-
+                updatePoint(curPoint, prePoint);
+                updatePoint(event, curPoint);
+                mRect.offset((int) (prePoint.x - curPoint.x), (int) (prePoint.y - curPoint.y));
+                if (mRect.left < 0) {
+                    mRect.left = 0;
+                    mRect.right = getWidth();
+                }
+                if (mRect.right > mPictureWidth) {
+                    mRect.left = mPictureWidth - getWidth();
+                    mRect.right = mPictureWidth;
+                }
+                if (mRect.top < 0) {
+                    mRect.top = 0;
+                    mRect.bottom = getHeight();
+                }
+                if (mRect.bottom > mPictureHeight) {
+                    mRect.top = mPictureHeight - getHeight();
+                    mRect.bottom = mPictureHeight;
+                }
+                invalidate();
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
@@ -96,12 +116,16 @@ public class BigImageView extends ImageView {
                 break;
         }
         super.onTouchEvent(event);
-        invalidate();
         return true;
     }
 
     private void updatePoint(MotionEvent event, PointF pointF) {
         pointF.x = event.getX();
         pointF.y = event.getY();
+    }
+
+    private void updatePoint(PointF src, PointF dst) {
+        dst.x = src.x;
+        dst.y = src.y;
     }
 }
