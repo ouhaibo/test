@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
             Field sCurrentActivityThreadField = activityThreadClass.getDeclaredField("sCurrentActivityThread");
             Object sCurrentActivityThread = sCurrentActivityThreadField.get(null);
             sPackageManagerField.set(sCurrentActivityThread, hookedIPackageManager);
-            // 2. 替换 ApplicationPackageManager里面的 mPM对象
+            // 2. 替换 ApplicationPackageManager里面的 mPM字段
             PackageManager pm = getPackageManager();
             Field mPMField = pm.getClass().getDeclaredField("mPM");
             mPMField.setAccessible(true);
