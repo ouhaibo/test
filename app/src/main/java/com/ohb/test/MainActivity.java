@@ -106,13 +106,13 @@ public class MainActivity extends Activity {
             sPackageManagerField.setAccessible(true);
             Object originalIPackageManager = sPackageManagerField.get(null);
             Object hookedIPackageManager = Proxy.newProxyInstance(originalIPackageManager.getClass().getClassLoader(), new Class<?>[]{IInterface.class, Class.forName("android.content.pm.IPackageManager")}, new HookIPackageManagerHandler(originalIPackageManager));
-            
+
             // 1. 替换掉ActivityThread里面的 sPackageManager 字段
             Field sCurrentActivityThreadField = activityThreadClass.getDeclaredField("sCurrentActivityThread");
             Object sCurrentActivityThread = sCurrentActivityThreadField.get(null);
             sPackageManagerField.set(sCurrentActivityThread, hookedIPackageManager);
 
-            // 2. 替换 ApplicationPackageManager里面的 mPM字段
+            // 2. 替换ApplicationPackageManager里面的 mPM字段
             PackageManager pm = getPackageManager();
             Field mPMField = pm.getClass().getDeclaredField("mPM");
             mPMField.setAccessible(true);
