@@ -1,8 +1,11 @@
 package com.ohb.test.com.ohb.test.pulltorefresh;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Handler;
 import android.os.Message;
+
+import com.ohb.test.Utils;
 
 import java.lang.reflect.Field;
 
@@ -28,7 +31,15 @@ public class ActivityThreadHandlerCallback implements Handler.Callback {
             intentField.setAccessible(true);
             Intent fakeIntent = (Intent) intentField.get(obj);
             Intent rawIntent = fakeIntent.getParcelableExtra("rawIntent");
+            if (rawIntent == null) {
+                return;
+            }
             fakeIntent.setComponent(rawIntent.getComponent());
+
+            Field fieldActivityInfo = obj.getClass().getDeclaredField("activityInfo");
+            fieldActivityInfo.setAccessible(true);
+            ActivityInfo activityInfo = (ActivityInfo) fieldActivityInfo.get(obj);
+            activityInfo.applicationInfo = Utils.generateApplicationInfo(null);//传入插件apk的File对象
         } catch (Exception e) {
             e.printStackTrace();
         }
