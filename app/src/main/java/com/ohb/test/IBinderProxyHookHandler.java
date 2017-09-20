@@ -11,19 +11,21 @@ import java.lang.reflect.Method;
  */
 
 /**
- * IInputManager
+ * IBinder&Stub
  */
-public class BinderHookHandler implements InvocationHandler {
+public class IBinderProxyHookHandler implements InvocationHandler {
 
     private Object mBase;
+    private String mMethodName;
 
-    public BinderHookHandler(Object base) {
+    public IBinderProxyHookHandler(Object base, String methodName) {
         this.mBase = base;
+        mMethodName = methodName;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if ("getInputDeviceIds".equals(method.getName())) {
+        if (mMethodName.equals(method.getName())) {
             Log.d("device ids:", "1,2,3,4,5");
             return new int[]{1, 2, 3, 4, 5};
         }
