@@ -1,40 +1,22 @@
 package com.ohb.test;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityThread;
-import android.app.Instrumentation;
-import android.content.ContentProvider;
 import android.content.Context;
-import android.content.Loader;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.hardware.input.InputManager;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.IInterface;
-import android.os.Parcel;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewRootImpl;
 
 import com.ohb.test.com.ohb.test.pulltorefresh.ActivityThreadHandlerCallback;
 
-import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import dalvik.system.DexClassLoader;
 
 
 public class MainActivity extends Activity {
@@ -128,7 +110,7 @@ public class MainActivity extends Activity {
             Method getService = serviceManager.getDeclaredMethod("getService", String.class);
             IBinder rawInputManagerBinder = (IBinder) getService.invoke(null, Context.INPUT_SERVICE);
 
-            IBinder hookedProxyBinder = (IBinder) Proxy.newProxyInstance(serviceManager.getClassLoader(), new Class<?>[]{IBinder.class}, new BinderProxyHookHandler(rawInputManagerBinder));
+            IBinder hookedProxyBinder = (IBinder) Proxy.newProxyInstance(serviceManager.getClassLoader(), new Class<?>[]{IBinder.class}, new IBinderHookHandler(rawInputManagerBinder, "android.hardware.input.IInputManager", "android.hardware.input.IInputManager$Stub", "getInputDeviceIds"));
 
             Field sCache = serviceManager.getDeclaredField("sCache");
             sCache.setAccessible(true);
