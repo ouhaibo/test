@@ -16,8 +16,31 @@ import dalvik.system.DexClassLoader;
  */
 
 public class Utils {
+
+    public static ApplicationInfo generateApplicationInfo(File apkFile) throws Exception {
+        //---API 24:
+        Class classPackageParser = Class.forName("android.content.pm.PackageParser");
+        Class classPackage = Class.forName("android.content.pm.PackageParser$Package");
+        Class classPackageUserState = Class.forName("android.content.pm.PackageUserState");
+
+        Method methodGenerateApplicationInfo = classPackageParser.getDeclaredMethod("generateApplicationInfo", classPackage, int.class, classPackageUserState);
+
+        Method methodParsePackage = classPackageParser.getDeclaredMethod("parsePackage", File.class, int.class);
+        Object packageParser = classPackageParser.newInstance();
+
+        Object objPackage = methodParsePackage.invoke(packageParser, apkFile, 0);
+        Object packageUserState = classPackageUserState.newInstance();
+
+        ApplicationInfo applicationInfo = (ApplicationInfo) methodGenerateApplicationInfo.invoke(null, objPackage, 0, packageUserState);
+        String apkPath = apkFile.getAbsolutePath();
+        applicationInfo.sourceDir = apkPath;
+        applicationInfo.publicSourceDir = apkPath;
+        //---
+        return applicationInfo;
+    }
+
+
     /**
-     *
      * @param context
      * @param apkFile
      * @throws Exception
@@ -39,25 +62,7 @@ public class Utils {
 
         Method methodGetPackageInfoNoCheck = classActivityThread.getDeclaredMethod("getPackageInfoNoCheck", classApplicationInfo, classCompatibilityInfo);
 
-        //---API 24:
-        Class classPackageParser = Class.forName("android.content.pm.PackageParser");
-        Class classPackage = Class.forName("android.content.pm.PackageParser$Package");
-        Class classPackageUserState = Class.forName("android.content.pm.PackageUserState");
-
-        Method methodGenerateApplicationInfo = classPackageParser.getDeclaredMethod("generateApplicationInfo", classPackage, int.class, classPackageUserState);
-
-        Method methodParsePackage = classPackageParser.getDeclaredMethod("parsePackage", File.class, int.class);
-        Object packageParser = classPackageParser.newInstance();
-
-        Object objPackage = methodParsePackage.invoke(packageParser, apkFile, 0);
-        Object packageUserState = classPackageUserState.newInstance();
-
-        ApplicationInfo applicationInfo = (ApplicationInfo) methodGenerateApplicationInfo.invoke(null, objPackage, 0, packageUserState);
-        //---
-
-        String apkPath = apkFile.getAbsolutePath();
-        applicationInfo.sourceDir = apkPath;
-        applicationInfo.publicSourceDir = apkPath;
+        ApplicationInfo applicationInfo = generateApplicationInfo(apkFile);
 
         Field field_DEFAULT_COMPATIBILITY_INFO = classCompatibilityInfo.getDeclaredField("DEFAULT_COMPATIBILITY_INFO");
         field_DEFAULT_COMPATIBILITY_INFO.setAccessible(true);
