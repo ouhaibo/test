@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.tv0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hook();
+                hook_InputManager();
             }
         });
         findViewById(R.id.tv).setOnClickListener(new View.OnClickListener() {
@@ -122,7 +122,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void hook() {
+    private void hook_InputManager() {
         try {
             Class<?> serviceManager = Class.forName("android.os.ServiceManager");
             Method getService = serviceManager.getDeclaredMethod("getService", String.class);
