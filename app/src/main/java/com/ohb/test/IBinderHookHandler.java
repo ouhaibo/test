@@ -21,10 +21,10 @@ public class IBinderHookHandler implements InvocationHandler {
     private String mIInterfaceStubClassName;
     private String mMethodName;
 
-    public IBinderHookHandler(IBinder base, String IInterfaceName, String InterfaceStubClassName, String methodName) {
+    public IBinderHookHandler(IBinder base, String IInterfaceName, String IInterfaceStubClassName, String methodName) {
         mBase = base;
         mIInterfaceName = IInterfaceName;
-        mIInterfaceStubClassName = InterfaceStubClassName;
+        mIInterfaceStubClassName = IInterfaceStubClassName;
         mMethodName = methodName;
     }
 
