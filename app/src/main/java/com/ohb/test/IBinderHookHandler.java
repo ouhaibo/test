@@ -18,13 +18,13 @@ public class IBinderHookHandler implements InvocationHandler {
 
     private IBinder mBase;
     private String mIInterfaceName;
-    private String mIBinderStubClassName;
+    private String mIInterfaceStubClassName;
     private String mMethodName;
 
-    public IBinderHookHandler(IBinder base, String IInterfaceName, String IBinderStubClassName, String methodName) {
+    public IBinderHookHandler(IBinder base, String IInterfaceName, String InterfaceStubClassName, String methodName) {
         mBase = base;
         mIInterfaceName = IInterfaceName;
-        mIBinderStubClassName = IBinderStubClassName;
+        mIInterfaceStubClassName = InterfaceStubClassName;
         mMethodName = methodName;
     }
 
@@ -32,7 +32,7 @@ public class IBinderHookHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if ("queryLocalInterface".equals(method.getName())) {
             Object base;
-            Class stub = Class.forName(mIBinderStubClassName);
+            Class stub = Class.forName(mIInterfaceStubClassName);
             Method method_asInterface = stub.getDeclaredMethod("asInterface", IBinder.class);
             base = method_asInterface.invoke(null, mBase);
             return Proxy.newProxyInstance(proxy.getClass().getClassLoader(), new Class[]{IBinder.class, IInterface.class, Class.forName(mIInterfaceName)}, new IBinderProxyHookHandler(base, mMethodName));

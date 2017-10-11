@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  */
 
 /**
- * IBinder&Stub
+ * IInterface&Stub
  */
 public class IBinderProxyHookHandler implements InvocationHandler {
 
