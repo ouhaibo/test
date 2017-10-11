@@ -17,13 +17,13 @@ import java.lang.reflect.Proxy;
 public class IBinderHookHandler implements InvocationHandler {
 
     private IBinder mBase;
-    private String mIBinderName;
+    private String mIInterfaceName;
     private String mIBinderStubClassName;
     private String mMethodName;
 
-    public IBinderHookHandler(IBinder base, String IBinderName, String IBinderStubClassName, String methodName) {
+    public IBinderHookHandler(IBinder base, String IInterfaceName, String IBinderStubClassName, String methodName) {
         mBase = base;
-        mIBinderName = IBinderName;
+        mIInterfaceName = IInterfaceName;
         mIBinderStubClassName = IBinderStubClassName;
         mMethodName = methodName;
     }
@@ -35,7 +35,7 @@ public class IBinderHookHandler implements InvocationHandler {
             Class stub = Class.forName(mIBinderStubClassName);
             Method method_asInterface = stub.getDeclaredMethod("asInterface", IBinder.class);
             base = method_asInterface.invoke(null, mBase);
-            return Proxy.newProxyInstance(proxy.getClass().getClassLoader(), new Class[]{IBinder.class, IInterface.class, Class.forName(mIBinderName)}, new IBinderProxyHookHandler(base, mMethodName));
+            return Proxy.newProxyInstance(proxy.getClass().getClassLoader(), new Class[]{IBinder.class, IInterface.class, Class.forName(mIInterfaceName)}, new IBinderProxyHookHandler(base, mMethodName));
         }
         return method.invoke(mBase, args);
     }
