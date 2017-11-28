@@ -11,8 +11,6 @@ import android.os.IInterface;
 import android.util.Log;
 import android.view.View;
 
-import com.ohb.test.com.ohb.test.pulltorefresh.ActivityThreadHandlerCallback;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -41,7 +39,6 @@ public class MainActivity extends Activity {
         });
 
         findViewById(android.R.id.content).getViewTreeObserver().addOnGlobalLayoutListener(null);
-
     }
 
     private void hookActivityLaunch() {
@@ -108,14 +105,14 @@ public class MainActivity extends Activity {
         try {
             Class<?> serviceManager = Class.forName("android.os.ServiceManager");
             Method getService = serviceManager.getDeclaredMethod("getService", String.class);
-            IBinder rawInputManagerBinder = (IBinder) getService.invoke(null, Context.INPUT_SERVICE);
+            IBinder rawInputManagerIBinder = (IBinder) getService.invoke(null, Context.INPUT_SERVICE);
 
-            IBinder hookedProxyBinder = (IBinder) Proxy.newProxyInstance(serviceManager.getClassLoader(), new Class<?>[]{IBinder.class}, new IBinderHookHandler(rawInputManagerBinder, "android.hardware.input.IInputManager", "android.hardware.input.IInputManager$Stub", "getInputDeviceIds"));
+            IBinder hookedIBinder = (IBinder) Proxy.newProxyInstance(serviceManager.getClassLoader(), new Class<?>[]{IBinder.class}, new IBinderHookHandler(rawInputManagerIBinder, "android.hardware.input.IInputManager", "android.hardware.input.IInputManager$Stub", "getInputDeviceIds"));
 
             Field sCache = serviceManager.getDeclaredField("sCache");
             sCache.setAccessible(true);
             HashMap<String, IBinder> map = (HashMap<String, IBinder>) sCache.get(null);
-            map.put(Context.INPUT_SERVICE, hookedProxyBinder);
+            map.put(Context.INPUT_SERVICE, hookedIBinder);
             sCache.set(null, map);
             sCache.setAccessible(false);
 

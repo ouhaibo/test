@@ -1,4 +1,4 @@
-package com.ohb.test.com.ohb.test.pulltorefresh;
+package com.ohb.test;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
