@@ -30,16 +30,16 @@ public class ActivityThreadHandlerCallback implements Handler.Callback {
             Field intentField = obj.getClass().getDeclaredField("intent");
             intentField.setAccessible(true);
             Intent fakeIntent = (Intent) intentField.get(obj);
-            Intent rawIntent = fakeIntent.getParcelableExtra("rawIntent");
-            if (rawIntent == null) {
+            Intent realIntent = fakeIntent.getParcelableExtra("realIntent");
+            if (realIntent == null) {
                 return;
             }
-            fakeIntent.setComponent(rawIntent.getComponent());
+            fakeIntent.setComponent(realIntent.getComponent());
 
             Field fieldActivityInfo = obj.getClass().getDeclaredField("activityInfo");
             fieldActivityInfo.setAccessible(true);
             ActivityInfo activityInfo = (ActivityInfo) fieldActivityInfo.get(obj);
-            activityInfo.applicationInfo = Utils.generateApplicationInfo(null);//传入插件apk的File对象
+            activityInfo.applicationInfo = Utils.generateApplicationInfo(null);//ActivityThread中通过ApplicationInfo来获取LoadedApk
         } catch (Exception e) {
             e.printStackTrace();
         }

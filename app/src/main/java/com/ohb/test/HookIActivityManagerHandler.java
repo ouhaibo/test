@@ -23,11 +23,11 @@ public class HookIActivityManagerHandler implements InvocationHandler {
         Log.d("Hook AMS", "AMS has been hooked");
         if ("startActivity".equals(method.getName())) {
             Log.d("Hook AMS", "hook startActivity");
-            Intent rawIntent = null;
+            Intent realIntent = null;
             int index = 0;
             for (int i = 0; i < args.length; i++) {
                 if (args[i] instanceof Intent) {
-                    rawIntent = (Intent) args[i];
+                    realIntent = (Intent) args[i];
                     index = i;
                     break;
                 }
@@ -36,7 +36,7 @@ public class HookIActivityManagerHandler implements InvocationHandler {
             String fakePackageName = "com.ohb.test";
             ComponentName componentName = new ComponentName(fakePackageName, StubActivity.class.getCanonicalName());
             fakeIntent.setComponent(componentName);
-            fakeIntent.putExtra("rawInent", rawIntent);//把启动真正Actvity的Intent保存起来
+            fakeIntent.putExtra("realIntent", realIntent);//把启动真正Actvity的Intent保存起来
             args[index] = fakeIntent;
         }
         return method.invoke(mBase, args);
